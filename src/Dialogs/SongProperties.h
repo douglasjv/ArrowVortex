@@ -9,6 +9,7 @@
 #include <Simfile/Tempo.h>
 #include <filesystem>
 #include <functional>
+#include <vector>
 namespace fs = std::filesystem;
 
 namespace Vortex {
