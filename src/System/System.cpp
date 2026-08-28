@@ -27,7 +27,9 @@
 #define SDL_MAIN_USE_CALLBACKS
 #endif
 #include <SDL3/SDL.h>
+#ifndef ARROWVORTEX_NO_APP_ENTRY
 #include <SDL3/SDL_main.h>
+#endif
 #include <SDL3/SDL_video.h>
 #include <System/OpenGL.h>
 
