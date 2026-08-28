@@ -28,7 +28,7 @@ struct System {
     enum Icon { I_NONE, I_INFO, I_WARNING, I_ERROR, NUM_ICONS };
 
     /// Indicates which button was pressed by the user in a dialog.
-    enum Result { R_CANCEL, R_OK, R_YES, R_NO, NUM_RESULTS };
+    enum Result { R_CANCEL, R_ACCEPT, R_YES, R_NO, NUM_RESULTS };
 
     /// Shows a message box dialog.
     virtual Result showMessageDlg(const std::string& title,

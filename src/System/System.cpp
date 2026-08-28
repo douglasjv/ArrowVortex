@@ -441,13 +441,13 @@ struct SystemImpl : public System {
         switch (b) {
             case (T_OK):
                 box.numbuttons = 1;
-                buttons[0].buttonID = R_OK;
+                buttons[0].buttonID = R_ACCEPT;
                 buttons[0].text = "OK";
                 buttons[0].flags = SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT;
                 break;
             case (T_OK_CANCEL):
                 box.numbuttons = 2;
-                buttons[0].buttonID = R_OK;
+                buttons[0].buttonID = R_ACCEPT;
                 buttons[0].text = "OK";
                 buttons[0].flags = SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT;
                 buttons[1].buttonID = R_CANCEL;
