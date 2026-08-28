@@ -18,6 +18,11 @@
 #include <Editor/Editor.h>
 #include <Editor/Menubar.h>
 
+#include <Simfile/Parsing.h>
+#include <Simfile/SegmentGroup.h>
+#include <Simfile/Segments.h>
+#include <Simfile/Tempo.h>
+
 #define SDL_MAIN_USE_CALLBACKS
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
@@ -58,6 +63,7 @@ std::bitset<Vortex::Mouse::MAX_VALUE> myMouseState;
 float myScale = 1.0f;
 int smokeFramesRemaining = 0;
 std::string smokeFixturePath;
+std::string roundTripFixturePath;
 
 namespace Vortex {
 
@@ -636,17 +642,89 @@ static void ApplicationEnd() {
     Debug::log("Closing ArrowVortex :: %s", System::getLocalTime().c_str());
 }
 
+static bool RunRoundTripTest(const fs::path& fixture) {
+    Simfile original;
+    if (!LoadSimfile(original, fixture)) return false;
+
+    const std::string title = original.title;
+    const std::string artist = original.artist;
+    const size_t chart_count = original.charts.size();
+    const size_t bpm_count =
+        original.tempo->segments->getList<BpmChange>().size();
+    const size_t stop_count = original.tempo->segments->getList<Stop>().size();
+    const size_t warp_count = original.tempo->segments->getList<Warp>().size();
+
+    fs::path output_dir =
+        fs::path(gSystem->getPreferenceDir()) / "roundtrip-tests";
+    std::error_code error;
+    fs::remove_all(output_dir, error);
+    fs::create_directories(output_dir, error);
+    if (error) return false;
+
+    original.dir = pathToUtf8(output_dir) + fs::path::preferred_separator;
+    original.file = pathToUtf8(fixture.filename());
+    if (!SaveSimfile(original, original.format, false)) return false;
+
+    fs::path saved = output_dir / fixture.filename();
+    if (original.format == SIM_OSU) {
+        saved.clear();
+        for (const auto& entry : fs::directory_iterator(output_dir)) {
+            if (entry.path().extension() == ".osu") {
+                saved = entry.path();
+                break;
+            }
+        }
+    }
+    if (saved.empty() || !fs::exists(saved)) return false;
+
+    Simfile reloaded;
+    if (!LoadSimfile(reloaded, saved)) return false;
+    const size_t reloaded_warp_count =
+        reloaded.tempo->segments->getList<Warp>().size();
+    const bool warps_match =
+        original.format != SIM_SSC || reloaded_warp_count == warp_count;
+    const bool matches =
+        reloaded.title == title && reloaded.artist == artist &&
+        reloaded.charts.size() == chart_count &&
+        reloaded.tempo->segments->getList<BpmChange>().size() == bpm_count &&
+        reloaded.tempo->segments->getList<Stop>().size() == stop_count &&
+        warps_match;
+    if (!matches) {
+        Debug::log(
+            "expected title=%s artist=%s charts=%zu bpms=%zu stops=%zu "
+            "warps=%zu\n",
+            title.c_str(), artist.c_str(), chart_count, bpm_count, stop_count,
+            warp_count);
+        Debug::log(
+            "actual title=%s artist=%s charts=%zu bpms=%zu stops=%zu "
+            "warps=%zu\n",
+            reloaded.title.c_str(), reloaded.artist.c_str(),
+            reloaded.charts.size(),
+            reloaded.tempo->segments->getList<BpmChange>().size(),
+            reloaded.tempo->segments->getList<Stop>().size(),
+            reloaded_warp_count);
+    }
+    Debug::log("Round-trip test %s: %s\n", pathToUtf8(fixture).c_str(),
+               matches ? "PASS" : "FAIL");
+    return matches;
+}
+
 SDL_AppResult SDL_AppInit(void** appstate, int argc, char** argv) {
     for (int i = 1; i < argc; ++i) {
         if (std::string_view(argv[i]) == "--smoke-test") {
             smokeFramesRemaining = 120;
             if (i + 1 < argc && argv[i + 1][0] != '-')
                 smokeFixturePath = argv[++i];
+        } else if (std::string_view(argv[i]) == "--roundtrip-test" &&
+                   i + 1 < argc) {
+            roundTripFixturePath = argv[++i];
         }
     }
-    if (!smokeFixturePath.empty() && !fs::exists(smokeFixturePath)) {
+    const std::string& requested_fixture =
+        roundTripFixturePath.empty() ? smokeFixturePath : roundTripFixturePath;
+    if (!requested_fixture.empty() && !fs::exists(requested_fixture)) {
         SDL_Log("Smoke-test fixture does not exist: %s",
-                smokeFixturePath.c_str());
+                requested_fixture.c_str());
         return SDL_APP_FAILURE;
     }
 
@@ -657,6 +735,11 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char** argv) {
     Debug::openConsole();
 #endif
     Editor::create();
+    if (!roundTripFixturePath.empty()) {
+        const bool passed = RunRoundTripTest(roundTripFixturePath);
+        Editor::destroy();
+        return passed ? SDL_APP_SUCCESS : SDL_APP_FAILURE;
+    }
     SDL_StartTextInput(window);
     SDL_SetWindowResizable(window, true);
 

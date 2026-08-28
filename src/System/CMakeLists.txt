@@ -69,6 +69,12 @@ elseif(APPLE)
         COMMAND "${CMAKE_COMMAND}" -E copy
                 "${MACOS_ICON}"
                 "$<TARGET_BUNDLE_CONTENT_DIR:ArrowVortex>/Resources/ArrowVortex.icns"
+        COMMAND "${CMAKE_COMMAND}" -E copy
+                "${PROJECT_SOURCE_DIR}/LICENSE"
+                "$<TARGET_BUNDLE_CONTENT_DIR:ArrowVortex>/Resources/LICENSE"
+        COMMAND "${CMAKE_COMMAND}" -E copy
+                "${PROJECT_SOURCE_DIR}/CREDITS"
+                "$<TARGET_BUNDLE_CONTENT_DIR:ArrowVortex>/Resources/CREDITS"
         VERBATIM
     )
 else()

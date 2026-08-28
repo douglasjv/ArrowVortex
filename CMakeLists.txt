@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.28)
 
 project(ArrowVortex VERSION 1.1.0 LANGUAGES C CXX)
 
+include(CTest)
+
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -68,6 +70,17 @@ add_subdirectory(src/Managers)
 add_subdirectory(src/Simfile)
 add_subdirectory(src/System)
 
+if(BUILD_TESTING)
+    foreach(format sm ssc osu dwi)
+        add_test(
+            NAME simfile-roundtrip-${format}
+            COMMAND $<TARGET_FILE:ArrowVortex> --roundtrip-test
+                    "${PROJECT_SOURCE_DIR}/tests/fixtures/roundtrip.${format}"
+        )
+        set_tests_properties(simfile-roundtrip-${format} PROPERTIES TIMEOUT 30)
+    endforeach()
+endif()
+
 if(APPLE)
     install(TARGETS ArrowVortex BUNDLE DESTINATION .)
 else()
@@ -75,6 +88,7 @@ else()
     install(DIRECTORY bin/assets DESTINATION bin)
     install(DIRECTORY bin/noteskins DESTINATION bin)
     install(DIRECTORY bin/settings DESTINATION bin)
+    install(FILES LICENSE CREDITS DESTINATION .)
 endif()
 
 file(GLOB_RECURSE path_sources CONFIGURE_DEPENDS
