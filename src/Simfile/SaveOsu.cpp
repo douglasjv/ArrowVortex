@@ -99,10 +99,10 @@ static void ConvertStop(std::vector<ExportTP>& tps,
     double timeDiff =
         (cur->endTime - cur->time) + (endRow - cur->row) * cur->spr;
     double rowDiff = endRow - cur->row;
-    tps.emplace_back(cur->time, timeDiff / rowDiff);
+    tps.push_back({cur->time, timeDiff / rowDiff});
 
     // Revert back to actual BPM after the change.
-    tps.emplace_back(cur->endTime, cur->spr);
+    tps.push_back({cur->endTime, cur->spr});
 }
 
 static void WriteTimingPoints(std::ofstream& out, const Chart* chart,
@@ -118,7 +118,7 @@ static void WriteTimingPoints(std::ofstream& out, const Chart* chart,
             auto next = it + 1;
             ConvertStop(tps, &(*it), (next == end) ? nullptr : &(*next), chart);
         } else {
-            tps.emplace_back(it->time, it->spr);
+            tps.push_back({it->time, it->spr});
         }
     }
 
