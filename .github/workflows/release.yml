@@ -16,6 +16,8 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
       - run: |
           files=$(git diff --name-only --diff-filter=ACMRT HEAD^ -- \
             'src/*.cpp' 'src/*.h' 'src/*.mm')
