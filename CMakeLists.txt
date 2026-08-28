@@ -71,13 +71,23 @@ add_subdirectory(src/Simfile)
 add_subdirectory(src/System)
 
 if(BUILD_TESTING)
+    add_executable(ArrowVortexSimfileRoundTrip tests/SimfileRoundTrip.cpp)
+    target_link_libraries(ArrowVortexSimfileRoundTrip PRIVATE Simfile System)
+    if(APPLE)
+        target_link_libraries(ArrowVortexSimfileRoundTrip PRIVATE
+                              "-framework Cocoa")
+    endif()
+
     foreach(format sm ssc osu dwi)
         add_test(
             NAME simfile-roundtrip-${format}
-            COMMAND $<TARGET_FILE:ArrowVortex> --roundtrip-test
+            COMMAND $<TARGET_FILE:ArrowVortexSimfileRoundTrip>
                     "${PROJECT_SOURCE_DIR}/tests/fixtures/roundtrip.${format}"
         )
-        set_tests_properties(simfile-roundtrip-${format} PROPERTIES TIMEOUT 30)
+        set_tests_properties(simfile-roundtrip-${format} PROPERTIES
+            TIMEOUT 30
+            WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/bin"
+        )
     endforeach()
 endif()
 

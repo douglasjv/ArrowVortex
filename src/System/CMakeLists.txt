@@ -25,6 +25,7 @@ else()
 endif()
 
 add_library(System STATIC ${SRC} ${INC})
+target_compile_definitions(System PRIVATE ARROWVORTEX_NO_APP_ENTRY=1)
 target_link_libraries(System PRIVATE Core Editor OpenGL::GL SDL3::SDL3)
 
 set(APP_SOURCES System.cpp)
