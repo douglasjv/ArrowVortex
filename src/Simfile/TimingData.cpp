@@ -130,8 +130,8 @@ static WarpResult HandleWarp(std::vector<Event>& out, MergedTS* it,
                 entry->endTime = time;
                 entry->spr = spr;
             } else if (warpEndRow < row) {
-                out.emplace_back(warpEndRow, targetTime, targetTime, targetTime,
-                                 spr);
+                out.push_back(
+                    {warpEndRow, targetTime, targetTime, targetTime, spr});
             }
             return {row, time, it};
         }
@@ -161,7 +161,7 @@ static WarpResult HandleWarp(std::vector<Event>& out, MergedTS* it,
                 entry->endTime = time;
                 entry->spr = spr;
             } else {
-                out.emplace_back(row, targetTime, targetTime, time, spr);
+                out.push_back({row, targetTime, targetTime, time, spr});
             }
             return {row, time, it};
         }
@@ -174,7 +174,7 @@ static WarpResult HandleWarp(std::vector<Event>& out, MergedTS* it,
     int row = prevRow + warpRows;
     if (time < targetTime)
         row += static_cast<int>(round((targetTime - time) / spr));
-    out.emplace_back(row, targetTime, targetTime, targetTime, spr);
+    out.push_back({row, targetTime, targetTime, targetTime, spr});
     return {row, targetTime, it};
 }
 
@@ -206,7 +206,7 @@ static void CreateEvents(std::vector<Event>& out, double time, MergedTS* it,
 
         double rowTime = time + delay;
         double endTime = rowTime + stop;
-        out.emplace_back(row, time, rowTime, endTime, spr);
+        out.push_back({row, time, rowTime, endTime, spr});
 
         if (endTime < time || spr < 0 || warp > 0) {
             auto result = HandleWarp(out, it, end, warp);
@@ -222,7 +222,7 @@ static void CreateEvents(std::vector<Event>& out, double time, MergedTS* it,
         row = it->seg->row;
     }
     if (out.empty()) {
-        out.emplace_back(0, 0.0, 0.0, 0.0, BEATS_PER_ROW);
+        out.push_back({0, 0.0, 0.0, 0.0, BEATS_PER_ROW});
     }
 }
 
@@ -235,7 +235,7 @@ static void CreateTimeSigs(std::vector<TimeSig>& out, const TimeSignature* it,
     while (it != end) {
         int beatsPerMeasure = std::max(it->rowsPerMeasure / ROWS_PER_BEAT, 1);
         int rowsPerMeasure = beatsPerMeasure * ROWS_PER_BEAT;
-        out.emplace_back(row, measure, rowsPerMeasure);
+        out.push_back({row, measure, rowsPerMeasure});
         if (++it != end) {
             int passedMeasures =
                 (it->row - row + rowsPerMeasure - 1) / rowsPerMeasure;
@@ -248,7 +248,7 @@ static void CreateTimeSigs(std::vector<TimeSig>& out, const TimeSignature* it,
         }
     }
     if (out.empty()) {
-        out.emplace_back(0, 0, ROWS_PER_BEAT * 4);
+        out.push_back({0, 0, ROWS_PER_BEAT * 4});
     }
 }
 
@@ -263,14 +263,14 @@ static void CreateScrollRows(std::vector<ScrollRow>& out, const Scroll* it,
         row = it->row;
         rowScroll = static_cast<double>(it->row);
         ratio = it->ratio;
-        out.emplace_back(row, rowScroll, ratio);
+        out.push_back({row, rowScroll, ratio});
 
         while (++it != end) {
             int passedRows = (it->row - row);
             rowScroll += passedRows * ratio;
             row = it->row;
             ratio = it->ratio;
-            out.emplace_back(row, rowScroll, ratio);
+            out.push_back({row, rowScroll, ratio});
 
             auto next = it + 1;
             while (next != end && next->row <= row) {
@@ -293,7 +293,7 @@ static void CreateScrollSpeeds(std::vector<ScrollSpeed>& out, const Speed* it,
         double delay = it->unit == 0
                            ? (round(it->delay * ROWS_PER_BEAT) / ROWS_PER_BEAT)
                            : it->delay;
-        out.emplace_back(row, it->unit, previous, it->ratio, delay, rowTime);
+        out.push_back({row, it->unit, previous, it->ratio, delay, rowTime});
         previous = it->ratio;
         ++it;
     }
@@ -305,7 +305,7 @@ static void CreateScrollSpeeds(std::vector<ScrollSpeed>& out, const Speed* it,
 static void CreateScrollFakes(std::vector<ScrollFake>& out, const Fake* it,
                               const Fake* end) {
     while (it != end) {
-        out.emplace_back(it->row, it->numRows);
+        out.push_back({it->row, it->numRows});
         ++it;
     }
 }
@@ -461,10 +461,10 @@ static double PositionToSpeed(const ScrollSpeed* speed, double beat,
 // Tempo list :: implementation.
 
 TimingData::TimingData() {
-    events.emplace_back(0, 0.0, 0.0, 0.0, BEATS_PER_ROW);
-    sigs.emplace_back(0, 0, ROWS_PER_BEAT * 4);
-    scrolls.emplace_back(0, 0, 1);
-    speeds.emplace_back(0, 1, 1, 0, 0);
+    events.push_back({0, 0.0, 0.0, 0.0, BEATS_PER_ROW});
+    sigs.push_back({0, 0, ROWS_PER_BEAT * 4});
+    scrolls.push_back({0, 0, 1});
+    speeds.push_back({0, 1, 1, 0, 0});
 }
 
 void TimingData::update(const Tempo* tempo) {

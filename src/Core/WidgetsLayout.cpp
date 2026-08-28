@@ -35,7 +35,7 @@ RowLayout::~RowLayout() {
 RowLayout::RowLayout(GuiContext* gui, int spacing)
     : GuiWidget(gui), row_spacing_(spacing) {
     Row row;
-    row.cols.emplace_back(0, 1, 0);
+    row.cols.push_back({0, 1, 0});
     row_list_.emplace_back(row);
 }
 
@@ -157,9 +157,12 @@ RowLayout& RowLayout::row(bool expand) {
 RowLayout& RowLayout::col(bool expand) { return col(INT_MAX, expand); }
 
 RowLayout& RowLayout::col(int w, bool expand) {
-    Col& col = row_list_.back().cols.emplace_back(
-        (w == INT_MAX) ? 0 : static_cast<int>(w * gSystem->getScaleFactor()),
-        w == INT_MAX, expand == true);
+    auto& cols = row_list_.back().cols;
+    cols.push_back({(w == INT_MAX)
+                        ? 0
+                        : static_cast<uint32_t>(w * gSystem->getScaleFactor()),
+                    w == INT_MAX, expand == true});
+    Col& col = cols.back();
     return *this;
 }
 
