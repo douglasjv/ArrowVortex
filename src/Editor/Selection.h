@@ -7,6 +7,8 @@
 
 #include <Editor/Common.h>
 
+#include <vector>
+
 namespace Vortex {
 
 struct SelectionRegion {
