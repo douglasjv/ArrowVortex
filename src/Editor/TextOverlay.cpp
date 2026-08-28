@@ -364,18 +364,18 @@ struct TextOverlayImpl : public TextOverlay {
     void addMessage(const char* str, MessageType type) override {
         std::string msg = str;
         if (type == NOTE) {
-            hudEntries_.emplace_back(msg, type, 0.5f);
+            hudEntries_.push_back({msg, type, 0.5f});
         } else if (type == INFO) {
             logEntries_.emplace_back(msg);
-            hudEntries_.emplace_back(msg, type, 3.0f);
+            hudEntries_.push_back({msg, type, 3.0f});
         } else if (type == WARNING) {
             Str::insert(msg, 0, "{tc:FF0}WARNING:{tc} ");
             logEntries_.emplace_back(msg);
-            hudEntries_.emplace_back(msg, type, 6.0f);
+            hudEntries_.push_back({msg, type, 6.0f});
         } else if (type == ERROR) {
             Str::insert(msg, 0, "{tc:F44}ERROR:{tc} ");
             logEntries_.emplace_back(msg);
-            hudEntries_.emplace_back(msg, type, 6.0f);
+            hudEntries_.push_back({msg, type, 6.0f});
         }
     }
 

@@ -278,10 +278,10 @@ struct ChartManImpl : public ChartMan {
                     streamEnd->row >= streamBegin->row + (ROWS_PER_BEAT * 4)) {
                     if (prevStreamEnd &&
                         streamBegin->row > prevStreamEnd->row) {
-                        items.emplace_back(prevStreamEnd->row, streamBegin->row,
-                                           true);
+                        items.push_back(
+                            {prevStreamEnd->row, streamBegin->row, true});
                     }
-                    items.emplace_back(streamBegin->row, streamEnd->row, false);
+                    items.push_back({streamBegin->row, streamEnd->row, false});
                     prevStreamEnd = streamEnd;
                 }
                 streamBegin = nullptr;
