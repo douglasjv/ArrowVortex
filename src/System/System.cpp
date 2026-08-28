@@ -43,6 +43,7 @@
 #include <map>
 #include <mutex>
 #include <functional>
+#include <fstream>
 #include <string_view>
 
 #undef DELETE
@@ -64,7 +65,9 @@ std::bitset<Vortex::Key::MAX_VALUE> myKeyState;
 std::bitset<Vortex::Mouse::MAX_VALUE> myMouseState;
 float myScale = 1.0f;
 int smokeFramesRemaining = 0;
+bool smokeTestSucceeded = false;
 std::string smokeFixturePath;
+std::string smokeResultPath;
 
 namespace Vortex {
 
@@ -649,6 +652,9 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char** argv) {
             smokeFramesRemaining = 120;
             if (i + 1 < argc && argv[i + 1][0] != '-')
                 smokeFixturePath = argv[++i];
+        } else if (std::string_view(argv[i]) == "--smoke-result" &&
+                   i + 1 < argc) {
+            smokeResultPath = argv[++i];
         }
     }
     if (!smokeFixturePath.empty() && !fs::exists(smokeFixturePath)) {
@@ -800,6 +806,7 @@ SDL_AppResult SDL_AppIterate(void* appstate) {
 #endif
     if (smokeFramesRemaining > 0 && --smokeFramesRemaining == 0) {
         Debug::log("Smoke test completed successfully after 120 frames.\n");
+        smokeTestSucceeded = true;
         myIsTerminated = true;
     }
     return SDL_APP_CONTINUE;
@@ -961,6 +968,11 @@ void SDL_AppQuit(void* appstate, SDL_AppResult result) {
     SDL_StopTextInput(window);
     delete static_cast<SystemImpl*>(gSystem);
     ApplicationEnd();
+    if (!smokeResultPath.empty() && smokeTestSucceeded &&
+        result == SDL_APP_SUCCESS) {
+        std::ofstream result_file(utf8ToPath(smokeResultPath));
+        result_file << "success\n";
+    }
 
 #ifdef CRTDBG_MAP_ALLOC
     _CrtDumpMemoryLeaks();

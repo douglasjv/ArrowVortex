@@ -115,7 +115,11 @@ jobs:
           cmake --build --preset ${{ matrix.preset }} --parallel
       - name: Smoke test
         run: |
-          out/build/${{ matrix.preset }}/src/System/ArrowVortex.app/Contents/MacOS/ArrowVortex --smoke-test
+          app=out/build/${{ matrix.preset }}/src/System/ArrowVortex.app
+          smoke_result="$RUNNER_TEMP/arrowvortex-smoke-${{ matrix.arch }}"
+          rm -f "$smoke_result"
+          open -W -n "$app" --args --smoke-test --smoke-result "$smoke_result"
+          grep -qx success "$smoke_result"
           ctest --test-dir out/build/${{ matrix.preset }} --output-on-failure
       - name: Validate architecture and bundle
         run: |
