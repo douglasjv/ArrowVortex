@@ -35,7 +35,7 @@ if(NOT TARGET Aubio::aubio)
     add_library(Aubio::aubio ALIAS PkgConfig::AUBIO)
 endif()
 
-find_package(FFMPEG CONFIG QUIET)
+find_package(FFMPEG QUIET)
 if(NOT FFMPEG_FOUND)
     if(NOT PkgConfig_FOUND)
         message(FATAL_ERROR "FFmpeg was not found and pkg-config is unavailable")
