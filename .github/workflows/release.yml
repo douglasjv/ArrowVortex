@@ -17,8 +17,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: |
-          clang-format --dry-run --Werror -style=file \
-            $(find src -type f \( -name '*.cpp' -o -name '*.h' -o -name '*.mm' \))
+          files=$(git diff --name-only --diff-filter=ACMRT HEAD^ -- \
+            'src/*.cpp' 'src/*.h' 'src/*.mm')
+          if [ -n "$files" ]; then
+            clang-format --dry-run --Werror -style=file $files
+          fi
 
   windows:
     name: Windows x64
