@@ -1,0 +1,4 @@
+# Repository-wide ownership. Keep this file self-owned so ownership changes
+# receive the same review policy as the rest of the repository.
+* @douglasjv
+/.github/CODEOWNERS @douglasjv
