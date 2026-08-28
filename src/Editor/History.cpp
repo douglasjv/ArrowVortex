@@ -179,7 +179,7 @@ struct HistoryImpl : public History {
 
     EditId addCallback(ApplyFunc apply, ReleaseFunc release) override {
         EditId out = myCallbacks.size();
-        myCallbacks.emplace_back(apply, release);
+        myCallbacks.push_back({apply, release});
         return out;
     }
 

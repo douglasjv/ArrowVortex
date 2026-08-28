@@ -408,7 +408,7 @@ struct NotefieldImpl : public Notefield {
                 // Measure line and measure label.
                 int y = drawPos.advance(row);
                 Draw::fill(&batch, {myX, y, myW, 1}, fullColor);
-                labels.emplace_back(measure, y);
+                labels.push_back({measure, y});
 
                 // Beat lines.
                 if (zoomedIn) {

@@ -187,8 +187,8 @@ static void ReadFontChange(const uint8_t* param, int len) {
 
 static void ReadFgColor(const uint8_t* param, int len) {
     if (LD->fgQuad.enabled) {
-        LD->fgQuads.emplace_back(LD->lineIndex, LD->fgQuad.x,
-                                 LD->lineW - LD->fgQuad.x, LD->fgQuad.color);
+        LD->fgQuads.push_back({LD->lineIndex, LD->fgQuad.x,
+                               LD->lineW - LD->fgQuad.x, LD->fgQuad.color});
         LD->fgQuad.enabled = false;
     }
     union {
@@ -204,8 +204,8 @@ static void ReadFgColor(const uint8_t* param, int len) {
 
 static void ReadBgColor(const uint8_t* param, int len) {
     if (LD->bgQuad.enabled) {
-        LD->bgQuads.emplace_back(LD->lineIndex, LD->bgQuad.x,
-                                 LD->lineW - LD->bgQuad.x, LD->bgQuad.color);
+        LD->bgQuads.push_back({LD->lineIndex, LD->bgQuad.x,
+                               LD->lineW - LD->bgQuad.x, LD->bgQuad.color});
         LD->bgQuad.enabled = false;
     }
     union {
@@ -400,7 +400,7 @@ static void AddEllipsesToLine() {
     LD->glyphs.resize(lastGlyph + 1, LGlyph());
     if (ellipsesW < LD->maxLineW) {
         for (int i = 0; i < 3; ++i) {
-            LD->glyphs.emplace_back(ellipsesGlyph, LD->lineW, lineEndCharIndex);
+            LD->glyphs.push_back({ellipsesGlyph, LD->lineW, lineEndCharIndex});
             LD->lineW += ellipsesGlyph->advance;
         }
     }
@@ -417,15 +417,15 @@ static void AddEllipsesToLine() {
 static void FinishCurrentLine(bool last) {
     // Finish the current foreground quad.
     if (LD->fgQuad.enabled && LD->lineW > LD->fgQuad.x) {
-        LD->fgQuads.emplace_back(LD->lineIndex, LD->fgQuad.x,
-                                 LD->lineW - LD->fgQuad.x, LD->fgQuad.color);
+        LD->fgQuads.push_back({LD->lineIndex, LD->fgQuad.x,
+                               LD->lineW - LD->fgQuad.x, LD->fgQuad.color});
         LD->fgQuad.x = 0;
     }
 
     // Finish the current background quad.
     if (LD->fgQuad.enabled && LD->lineW > LD->fgQuad.x) {
-        LD->bgQuads.emplace_back(LD->lineIndex, LD->fgQuad.x,
-                                 LD->lineW - LD->fgQuad.x, LD->fgQuad.color);
+        LD->bgQuads.push_back({LD->lineIndex, LD->fgQuad.x,
+                               LD->lineW - LD->fgQuad.x, LD->fgQuad.color});
         LD->fgQuad.x = 0;
     }
 
@@ -442,9 +442,9 @@ static void FinishCurrentLine(bool last) {
     }
 
     // Store the current line info.
-    LD->lines.emplace_back(LD->lineBeginGlyph,
-                           static_cast<int>(LD->glyphs.size()), 0, lineY,
-                           LD->lineW, LD->lineTop, LD->lineBottom);
+    LD->lines.push_back({LD->lineBeginGlyph,
+                         static_cast<int>(LD->glyphs.size()), 0, lineY,
+                         LD->lineW, LD->lineTop, LD->lineBottom});
 
     // Update the size of the text area.
     LD->textW = std::max(LD->textW, LD->lineW);
@@ -534,7 +534,7 @@ static void CreateLayout(const char* str) {
         }
 
         // Insert the glyph in the list.
-        LD->glyphs.emplace_back(glyph, LD->lineW, LD->charIndex);
+        LD->glyphs.push_back({glyph, LD->lineW, LD->charIndex});
 
         // Check if we are forced to break the line and continue on a new line.
         if (glyph->isNewline && isMultiline) {
