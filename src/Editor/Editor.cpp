@@ -1,7 +1,6 @@
 #include <Editor/Editor.h>
 
 #include <map>
-#include <format>
 
 #include <Core/Xmr.h>
 #include <Core/Gui.h>
@@ -491,8 +490,7 @@ struct EditorImpl : public Editor, public InputHandler {
         if (gHistory->hasUnsavedChanges()) {
             std::string title = gSimfile->get()->title;
             if (title.empty()) title = "the current file";
-            std::string msg =
-                std::format("Do you want to save changes to {}?", title);
+            std::string msg = "Do you want to save changes to " + title + "?";
 
             int res = gSystem->showMessageDlg(
                 "ArrowVortex", msg, System::T_YES_NO_CANCEL, System::I_NONE);
