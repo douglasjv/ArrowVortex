@@ -70,7 +70,8 @@ jobs:
       - name: Build and test
         run: |
           cmake --build out/build/linux-release --parallel
-          xvfb-run -a out/build/linux-release/src/System/ArrowVortex --smoke-test
+          SDL_AUDIODRIVER=dummy xvfb-run -a \
+            out/build/linux-release/src/System/ArrowVortex --smoke-test
           ctest --test-dir out/build/linux-release --output-on-failure
       - name: Install and package
         run: |
