@@ -54,7 +54,7 @@ bool RunRoundTripTest(const fs::path& fixture) {
     const size_t stop_count = original.tempo->segments->getList<Stop>().size();
     const size_t warp_count = original.tempo->segments->getList<Warp>().size();
 
-    original.dir = pathToUtf8(output_dir) + fs::path::preferred_separator;
+    original.dir = pathToUtf8(output_dir / fs::path{});
     original.file = pathToUtf8(fixture.filename());
     std::cerr << "Saving " << pathToUtf8(fixture) << '\n';
     if (!SaveSimfile(original, original.format, false)) return false;
