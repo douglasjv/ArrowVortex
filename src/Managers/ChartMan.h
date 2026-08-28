@@ -2,6 +2,8 @@
 
 #include <Simfile/Chart.h>
 
+#include <vector>
+
 namespace Vortex {
 
 /// Manages the active chart.

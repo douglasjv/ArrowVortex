@@ -3,6 +3,8 @@
 #include <Simfile/Tempo.h>
 #include <Simfile/Segments.h>
 
+#include <vector>
+
 namespace Vortex {
 
 struct TempoBox {

@@ -7,6 +7,8 @@
 
 #include <Editor/FindTempo.h>
 
+#include <vector>
+
 namespace Vortex {
 
 class DialogAdjustSync : public EditorDialog {

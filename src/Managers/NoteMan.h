@@ -4,6 +4,8 @@
 
 #include <Simfile/Notes.h>
 
+#include <vector>
+
 namespace Vortex {
 
 /// Manages the note data of the active chart.
