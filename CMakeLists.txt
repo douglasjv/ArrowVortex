@@ -72,7 +72,16 @@ add_subdirectory(src/System)
 
 if(BUILD_TESTING)
     add_executable(ArrowVortexSimfileRoundTrip tests/SimfileRoundTrip.cpp)
-    target_link_libraries(ArrowVortexSimfileRoundTrip PRIVATE Simfile System)
+    if(UNIX AND NOT APPLE)
+        # The application libraries intentionally retain upstream's circular
+        # references. GNU ld needs an explicit rescan group when the headless
+        # test executable links those static archives directly.
+        target_link_libraries(ArrowVortexSimfileRoundTrip PRIVATE
+            "$<LINK_GROUP:RESCAN,Simfile,System,Core,Editor,Managers,Dialogs>"
+        )
+    else()
+        target_link_libraries(ArrowVortexSimfileRoundTrip PRIVATE Simfile System)
+    endif()
     if(APPLE)
         target_link_libraries(ArrowVortexSimfileRoundTrip PRIVATE
                               "-framework Cocoa")
