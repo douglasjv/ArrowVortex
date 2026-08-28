@@ -105,6 +105,8 @@ jobs:
           repository: microsoft/vcpkg
           path: vcpkg
           ref: a62ce77d56ee07513b4b67de1ec2daeaebfae51a
+      - name: Install macOS build tools
+        run: brew install nasm
       - name: Bootstrap vcpkg
         run: ./vcpkg/bootstrap-vcpkg.sh -disableMetrics
       - name: Configure and build
