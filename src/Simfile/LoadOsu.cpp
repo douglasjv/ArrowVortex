@@ -243,12 +243,12 @@ static void ParseHitObjects(OsuFile& out, Parser& parser) {
             case 4:  // Color combo update steps
             case 5:
             case 6:
-                out.hitObjects.emplace_back(x, time, time);
+                out.hitObjects.push_back({x, time, time});
                 break;
             case 128:  // Hold note.
                 int hitSound = NoteVal(p);
                 double endTime = std::max(time, NoteVal(p) * 0.001);
-                out.hitObjects.emplace_back(x, time, endTime);
+                out.hitObjects.push_back({x, time, endTime});
                 break;
         };
     }

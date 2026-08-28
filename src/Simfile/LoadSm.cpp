@@ -660,7 +660,7 @@ static void ParseTag(ParseData& data, std::string tag, char* val) {
     }
 
     // Add the tag to the misc properties.
-    data.tempo()->misc.emplace_back(tag, val);
+    data.tempo()->misc.push_back({tag, val});
 }
 
 // ===================================================================================
