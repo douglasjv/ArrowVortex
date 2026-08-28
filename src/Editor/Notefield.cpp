@@ -2,7 +2,6 @@
 
 #include <math.h>
 #include <stdint.h>
-#include <format>
 
 #include <Core/Draw.h>
 #include <Core/Gui.h>

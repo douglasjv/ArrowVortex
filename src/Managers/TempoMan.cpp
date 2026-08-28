@@ -27,7 +27,7 @@
 
 #include <optional>
 #include <utility>
-#include <format>
+#include <sstream>
 #include <string>
 #include <tuple>
 
@@ -1037,10 +1037,11 @@ struct TempoManImpl : public TempoMan {
         std::string msg;
         if (myVisualSync->mode == VisualSyncMode::DESTRUCTIVE) {
             const double newBpm = this->getBpm(myVisualSync->leftLimitRow);
-            msg = std::format(
-                "Shifted anchor row destructively, modifying BPM "
-                "at row {0} from {1} to {2}",
-                myVisualSync->leftLimitRow, myVisualSync->initialBpm, newBpm);
+            std::ostringstream details;
+            details << "Shifted anchor row destructively, modifying BPM at row "
+                    << myVisualSync->leftLimitRow << " from "
+                    << myVisualSync->initialBpm << " to " << newBpm;
+            msg = details.str();
         } else if (myVisualSync->mode == VisualSyncMode::NON_DESTRUCTIVE) {
             msg = "Shifted anchor row non-destructively";
         } else if (myVisualSync->mode == VisualSyncMode::OFFSET) {
