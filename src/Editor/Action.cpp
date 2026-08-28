@@ -4,6 +4,7 @@
 
 #include <Editor/Editing.h>
 #include <Editor/Editor.h>
+#include <Editor/Menubar.h>
 #include <Editor/Minimap.h>
 #include <Editor/Menubar.h>
 #include <Editor/Music.h>
